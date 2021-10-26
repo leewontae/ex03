@@ -5,10 +5,9 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.zerock.domain.SampleVO;
+import org.zerock.domain.Ticket;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +61,7 @@ public class SampleController {
     // responseEntity 는 데이터와 함께 http 헤더의 상태 메세지등을 같이 전당하는 용도로 사용 한다.
     //http의 상태 코드와 에러메시지 등을 함께 데이터를 전달 할 수 있기 떄문에 받는 입장에서는 확실하게 결과를 알수 있다.
 //height <150 보다 작으면 bad_gateway(502) 샅태코드와 데이터를 전송 하고 이상이면 200(ok) 메세지를 보낸다.
-    // 개발자 도구 F12 통해 확인 가능 하다. 
+    // 개발자 도구 F12 통해 확인 가능 하다.
     @GetMapping(value = "/check",params = {"height","weight"})
     public ResponseEntity<SampleVO> check(Double height, Double weight){
         SampleVO vo = new SampleVO(0,""+height,""+weight);
@@ -77,4 +76,25 @@ public class SampleController {
         return result;
     }
 
+    /*
+    16.3.1 @PathVariable
+    예전에는 ? 뒤에 추가되는 쿼리스트링(query String)이라는 형태로 파라미터를 이용해서 전달되던 데이터들이 Rest방식에서는 경로의 일부로 차용되는 경우가 많다.
+    http://localhost:8080/sample/{sno}
+    http://localhost:8080/sample/{sno}/page/{pno}
+    */
+    @GetMapping("/product/{cat}/{pid}")
+    public String[] getPath(@PathVariable("cat") String cat, @PathVariable("pid") Integer pid){
+
+     return  new String[] {"category:"+cat,"productid:" +pid};
+    }
+
+    /* @RequestBody는 전달된 요청의 내용을 이용해서 해당 파라미터의 타입으로 변환을 요구한다.
+    SampleController 의 다른 메소드와 달리 @PostMapping이 적용된 것을 볼수 있는데 이것은 @RequestBody가 말 그대로 요청한 내용을 처리하기 떄문에 일반적인 파라미터 전달 방식을
+    사용할수 없기 떄문이다.*/
+
+@PostMapping("/ticket")
+    public Ticket convert(@RequestBody Ticket ticket){
+    log.info("convert...ticket"+ticket);
+    return  ticket;
+}
 }
